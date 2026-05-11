@@ -1,4 +1,12 @@
 # Databricks notebook source
+import sys
+import os
+#go two levels up to reach the project root
+project_root = os.path.abspath(os.path.join(os.getcwd(), "../..")) #os.getcwd() returns the current working directory
+
+if project_root not in sys.path: #sys.path is a list of directory paths that Python searches for modules
+    sys.path.append(project_root) 
+
 import urllib.request
 import os
 import shutil
@@ -20,9 +28,8 @@ try:
     local_path = (f"{dir_path}/taxi_zone_lookup.csv")
 
     #save the streamed content to the local file in binary mode
-    with open(local_path, 'wb') as f:
-        shutil.copyfileobj(response, f)
-        
+    local_path = f"{dir_path}/taxi_zone_lookup.csv"
+    
     dbutils.jobs.taskValues.set(key="continue_downstream", value="yes")
     print("File succesfully uplouded")
 except Exception as e:

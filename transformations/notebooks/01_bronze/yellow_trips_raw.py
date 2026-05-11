@@ -1,19 +1,29 @@
+import sys
+import os
+
+project_root = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+
+if project_root not in sys.path:
+    sys.path.append(project_root)
+    
+
 # Databricks notebook source
 from pyspark.sql.functions import current_timestamp
 from dateutil.relativedelta import relativedelta
 from datetime import date, datetime, timezone
+from modules.transformations.metadata import add_processed_timestamp
+from modules.utils.date_utils import get_target_yyyymm
 
 # COMMAND ----------
 
 #obtain the year-month for 2 months prior to the current month in yyyy-MM format
-two_months_ago = date.today() - relativedelta(months=2)
-formated_date = two_months_ago.strftime("%Y-%m")
+formated_date = get_target_yyyymm(months_ago=2)
 
 df = spark.read.format("parquet").load(f"/Volumes/nyctax/00_landing/data_sources/nyctaxi_yellow/{formated_date}")
 
 # COMMAND ----------
 
-df = df.withColumn("processed_timestamp", current_timestamp())
+df = add_processed_timestamp(df)
 
 
 # COMMAND ----------
