@@ -1,3 +1,11 @@
+import sys
+import os
+#go two levels up to reach the project root
+project_root = os.path.abspath(os.path.join(os.getcwd(), "../..")) #os.getcwd() returns the current working directory
+
+if project_root not in sys.path: #sys.path is a list of directory paths that Python searches for modules
+    sys.path.append(project_root) 
+
 # Databricks notebook source
 import urllib.request
 import os
@@ -5,6 +13,8 @@ import shutil
 from datetime import datetime
 from datetime import date, datetime, timezone
 from dateutil.relativedelta import relativedelta
+from modules.data_loader.file_downloader import downlaod_file
+from moduls.utils.date_utils import get_target_yyyymm
 
 # COMMAND ----------
 
@@ -35,14 +45,8 @@ except:
     try:
         #Construct the url for the parquet file 
         url = f"https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_{formatted_date}.parquet"
-        response = urllib.request.urlopen(url)
         
-        #create the local directory if it doesn't exist
-        os.makedirs(dir_path, exist_ok=True)
-
-        #save the streamed content 
-        with open(local_path, "wb") as f:
-            shutil.copyfileobj(response, f)
+        downlaod_file(url, dir_path, local_path)
 
         #set continue_downstream to yes if the file was loaded
         dbutils.jobs.taskValues.set(key="continue_downstream", value="yes")
