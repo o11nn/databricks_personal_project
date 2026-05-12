@@ -1,7 +1,7 @@
 from pyspark.sql.functions import date_format
 
 #add a year_month column, formatted as yyyy-MM
-df.spark.read.table("nyctaxi.02_silver.yellow_trips_enriched")
+df = spark.read.table("nyctax.02_silver.yellow_trips_enriched")
 
 df = df.withColumn("year_month", date_format("tpep_pickup_datetime", "yyyy-MM"))
 
@@ -12,4 +12,4 @@ df.write.\
     format("json").\
     mode("overwrite").\
     partitionBy("vendor", "year_month"). \
-    saveAsTable("nyctaxi.04_export.yellow_trips_export")
+    saveAsTable("nyctax.04_export.yellow_trips_export")
