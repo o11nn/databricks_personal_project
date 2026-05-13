@@ -21,4 +21,28 @@ spark.read.table("nyctax.`02_silver`.yellow_trips_cleansed") \
 
 # COMMAND ----------
 
+spark.read.table("nyctax.`02_silver`.yellow_trips_enriched") \
+    .groupBy(date_format("tpep_pickup_datetime", "yyyy-MM").alias("year_month")) \
+    .agg(count("*").alias("total_records")) \
+    .orderBy("year_month") \
+    .display()
+
+# COMMAND ----------
+
+spark.read.table("nyctax.`03_gold`.daily_trip_summary") \
+    .groupBy(date_format("tpep_pickup_datetime", "yyyy-MM").alias("year_month")) \
+    .agg(SUM("total_trips").alias("total_records")) \
+    .orderBy("year_month") \
+    .display()
+
+# COMMAND ----------
+
+spark.read.table("nyctax.`04_export`.yellow_trips_export") \
+    .groupBy("year_month") \
+    .agg(count("*").alias("total_records")) \
+    .orderBy("year_month") \
+    .display()
+
+# COMMAND ----------
+
 spark.read.table("nyctax.`02_silver`.taxi_zone_lookup").display()
